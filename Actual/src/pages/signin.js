@@ -1,6 +1,6 @@
 //REACT
 import React, { useContext, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 
 //FIREBASE
 import { signInWithPopup, signInWithEmailAndPassword } from 'firebase/auth';
@@ -93,7 +93,8 @@ export const Signin = () =>
   };
   
   return (
-
+    <> { userContext.user ?
+      (<Navigate to="/maindashboard" replace/>) : (
     <AuthScreen auth={"signin"}>
       
         <div className="w-full mb-4">
@@ -140,5 +141,6 @@ export const Signin = () =>
         </div>
 
     </AuthScreen>
+    )}</>
   );
 };
