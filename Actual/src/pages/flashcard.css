@@ -1,0 +1,52 @@
+.card {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 2px;
+    box-shadow: 0 0 5px 2px #0000004d;
+    transform-style: preserve-3d;
+    font-weight: 700;
+    height: 250px;
+    cursor: pointer;
+    transition: 0.15s;
+    transform: perspective(1000px) rotateX(var(--rotate-X, 0));
+    padding: 2em;
+    margin: 5px;
+  }
+  @keyframes logo-spin {
+    0% {
+      transform: rotate(0);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    a:nth-of-type(2) .logo {
+      animation: logo-spin infinite 20s linear;
+    }
+  }
+  .card.flipped {
+    --rotate-X: 180deg;
+  }
+  
+  .visibility {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    backface-visibility: hidden;
+    transform-style: preserve-3d;
+    width: 100%;
+  }
+  
+  .card .front,
+  .card .back {
+    position: absolute;
+    padding: 5px;
+    justify-content: center;
+    backface-visibility: hidden;
+  }
+  
+  .card .back {
+    transform: rotateX(180deg);
+  } 
