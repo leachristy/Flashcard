@@ -1,6 +1,6 @@
 //REACT
 import React, { useContext, useState } from "react";
-import { useLocation, useNavigate, redirect } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 //FIREBASE
 import { signInWithPopup, signInWithEmailAndPassword } from 'firebase/auth';
@@ -17,9 +17,7 @@ export const Signin = () =>
   const [userPass, setUserPass] = useState(''); //Pass Field State
   
   const userContext = useContext( FireAuthContext ); // USER CONTEXT
-  const location = useLocation(); //Location State Data
   const navigate = useNavigate(); //Redirector
-
 
   const SignInWithEmail = async () =>
   {    
@@ -80,7 +78,8 @@ export const Signin = () =>
             const newSetDoc = doc(db, "/UserData", `${results.user.uid}`);
             await setDoc(newSetDoc, 
             {
-                name: `"${results.user.email}"`,
+                email: `"${results.user.email}"`,
+                name: "UNSET",
             });
         }
     }
