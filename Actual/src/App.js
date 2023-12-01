@@ -15,7 +15,7 @@ import {Flashcard} from "./pages/flashcard";
 //User Created @LeothEcRz
 import NoPage from "./pages/noPage";
 import AuthWrap from "./fire/AuthWrap";
-
+import FormTest from './fire/FormTest';
 
 function App() {
   return (
@@ -47,6 +47,11 @@ function App() {
           <Route
             path="/dictmain"
             element={ <AuthWrap element={<Dictmain />}/> }
+          />
+
+          <Route
+            path="/new1"
+            element={ <AuthWrap element={<FormTest />}/> }
           />
 
           <Route
