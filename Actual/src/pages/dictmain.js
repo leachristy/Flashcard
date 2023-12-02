@@ -4,8 +4,10 @@ import { Dictnavbar } from "../components/dictNavbar";
 import "./Dictmain.css";
 
 export const Dictmain = () => {
+
   const location = useLocation();
   const receivedData = location.state;
+  
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
 

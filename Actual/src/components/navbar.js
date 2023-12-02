@@ -27,7 +27,7 @@ export const Navbar = () =>
 
   return (
     <>
-      <div className="flex justify-between items-center w-[100vw] h-[20vh] bg-blue-500 font-bold text-white mb-8 px-4">
+      <div className="flex justify-between items-center w-[100vw] h-[10vh] bg-blue-500 font-bold text-white mb-8 px-4">
         {/* first div */}
         <div className="flex gap-2  items-center ">
           
@@ -37,12 +37,12 @@ export const Navbar = () =>
             }}
             src={Logo}
             alt="log"
-            className="rounded-[50%] h-[100px] mx-10 hover:cursor-pointer"
+            className="rounded-[50%] h-[50px] mx-10 hover:cursor-pointer"
           />
 
           <div className="relative h-20 w-40">
             <NavLink
-              className="text-3xl hover:text-blue-300 hover:underline absolute inset-0 flex items-center justify-center transition duration-300"
+              className="text-xl hover:text-blue-300 hover:underline absolute inset-0 flex items-center justify-center transition duration-300"
               to="/sets"
             >
               Sets
@@ -58,24 +58,15 @@ export const Navbar = () =>
           {/*instant cards*/}
           <div className="relative h-20 w-40">
             <NavLink
-              className="text-3xl hover:text-blue-300 hover:underline absolute inset-0 flex items-center justify-center transition duration-300"
+              className="text-xl hover:text-blue-300 hover:underline absolute inset-0 flex items-center justify-center transition duration-300"
               to="/instantcards"
             >
               Instant Cards
             </NavLink>
           </div>
 
-          <div className="relative h-20 w-40">
-            <NavLink
-              className="text-3xl hover:text-blue-300 hover:underline absolute inset-0 flex items-center justify-center transition duration-300"
-              to=""
-            >
-              Dark Mode
-            </NavLink>
-          </div>
-
           {/* new */}
-          <div className="text-3xl relative h-20 w-40">
+          <div className="text-xl relative h-20 w-40">
             <NavLink
               className="hover:text-blue-300 hover:underline absolute inset-0 flex items-center justify-center transition duration-300"
               to="/new"
@@ -84,8 +75,17 @@ export const Navbar = () =>
             </NavLink>
           </div>
 
+          <div className="relative h-20 w-40">
+            <NavLink
+              className="text-xl hover:text-blue-300 hover:underline absolute inset-0 flex items-center justify-center transition duration-300"
+              to=""
+            >
+              Account
+            </NavLink>
+          </div>
+
           {/* Account */}
-          <div className="text-3xl relative h-20 w-40">
+          <div className="text-xl relative h-20 w-40">
             <button
               className="hover:text-blue-300 hover:underline absolute inset-0 flex items-center justify-center transition duration-300"
               onClick={handleSignOut}

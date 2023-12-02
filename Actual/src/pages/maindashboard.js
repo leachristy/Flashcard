@@ -17,17 +17,17 @@ export const Maindashboard = () =>
 
   return (
     <>
-      { !userContext.user ? 
-      <Navigate to="/"/> 
-      :
       <Dashboard>
         <div className="w-[80%] m-auto mt-4 flex flex-col gap-10">
+
           {/* div recent */}
           <div className="h-[25vh] border-2 border-blue-400 rounded-2xl shadow-2xl p-5 pb-8">
             <h1 className="text-3xl underline font-bold ">Recent</h1>
 
             {/* button */}
             <div className="flex justify-center my-4">
+
+              {/* REDUX */}
               {formData.map((data, index) => (
                 <button
                   onClick={() => navigator("/dictmain", { state: data })}
@@ -37,16 +37,21 @@ export const Maindashboard = () =>
                   {data.title}
                 </button>
               ))}
+
+              {/* Firebase */}
+                
+
             </div>
+
           </div>
 
           {/* div notification*/}
           <div className="h-[25vh] border-2 border-blue-400 rounded-2xl shadow-2xl p-5 pb-8">
-            <h1 className="text-3xl underline font-bold ">Notification</h1>
+            <h1 className="text-3xl underline font-bold ">Notifications</h1>
           </div>
+
         </div>
       </Dashboard>
-      }
     </>
   );
 };

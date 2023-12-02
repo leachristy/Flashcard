@@ -1,10 +1,27 @@
+//REACT
 import React, { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
+//USER CREATED
 import Logo from "../images/logo.jpg";
+
+//Firebase
+import { auth } from '../firebase-config'
 
 export const Dictnavbar = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [buttonPosition, setButtonPosition] = useState({ left: 0, top: 0 });
+
+  const handleSignOut = async () =>
+  {
+    try
+    {
+      await auth.signOut()
+    }
+    catch (error)
+    {
+      console.log(error);
+    }
+  }
 
   const handleButtonClick = () => {
     setModalOpen(!modalOpen);
@@ -23,7 +40,7 @@ export const Dictnavbar = () => {
 
   return (
     <>
-      <div className="flex justify-between items-center w-[100vw] h-[20vh] bg-blue-500 font-bold text-white mb-8 px-4">
+      <div className="flex justify-between items-center w-[100vw] h-[10vh] bg-blue-500 font-bold text-white mb-8 px-4">
         {/* first div */}
         <div className="flex gap-2  items-center ">
           <img
@@ -32,11 +49,11 @@ export const Dictnavbar = () => {
             }}
             src={Logo}
             alt="log"
-            className="rounded-[50%] h-[100px] mx-10 hover:cursor-pointer"
+            className="rounded-[50%] h-[50px] mx-10 hover:cursor-pointer"
           />
           <div className="relative h-20 w-40">
             <NavLink
-              className="text-3xl hover:text-blue-300 hover:underline absolute inset-0 flex items-center justify-center transition duration-300"
+              className="text-xl hover:text-blue-300 hover:underline absolute inset-0 flex items-center justify-center transition duration-300"
               to="/sets"
             >
               Sets
@@ -50,7 +67,7 @@ export const Dictnavbar = () => {
           <div className="relative h-20 w-40">
             <button
               id="dictionaryButton"
-              className="text-3xl absolute inset-0 flex items-center justify-center hover:text-blue-300 hover:underline border-red-700 transition duration-300"
+              className="text-xl absolute inset-0 flex items-center justify-center hover:text-blue-300 hover:underline border-red-700 transition duration-300"
               onClick={handleButtonClick}
             >
               Dictionary
@@ -92,18 +109,8 @@ export const Dictnavbar = () => {
             )}
           </div>
 
-          {/* dark mode */}
-          <div className="relative h-20 w-40">
-            <NavLink
-              className="text-3xl hover:text-blue-300 hover:underline absolute inset-0 flex items-center justify-center  transition duration-300"
-              to="/new"
-            >
-              Dark Mode
-            </NavLink>
-          </div>
-
           {/* new */}
-          <div className="text-3xl relative h-20 w-40">
+          <div className="text-xl relative h-20 w-40">
             <NavLink
               className="hover:text-blue-300 hover:underline absolute inset-0 flex items-center justify-center transition duration-300"
               to="/new"
@@ -113,14 +120,26 @@ export const Dictnavbar = () => {
           </div>
 
           {/* Account */}
-          <div className="text-3xl relative h-20 w-40">
+          <div className="relative h-20 w-40">
             <NavLink
-              className="hover:text-blue-300 hover:underline absolute inset-0 flex items-center justify-center transition duration-300"
+              className="text-xl hover:text-blue-300 hover:underline absolute inset-0 flex items-center justify-center  transition duration-300"
               to="/new"
             >
               Account
             </NavLink>
           </div>
+
+          {/* Account */}
+          <div className="text-xl relative h-20 w-40">
+            <button
+              className="hover:text-blue-300 hover:underline absolute inset-0 flex items-center justify-center transition duration-300"
+              onClick={handleSignOut}
+            >
+              Sign Out
+            </button>
+
+          </div>
+
         </div>
       </div>
     </>

@@ -3,17 +3,20 @@ import { Dashboard } from "./dashboard";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
-export const Sets = () => {
+export const Sets = () => 
+{
   const { formData } = useSelector((state) => state.mainSlice);
   const navigator = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState("Sets");
   const [selectedButton, setSelectedButton] = useState(null);
 
-  const handleClick = (category) => {
+  const handleClick = (category) => 
+  {
     setSelectedCategory(category === selectedCategory ? null : category);
   };
 
-  const handleButtonColor = (index) => {
+  const handleButtonColor = (index) => 
+  {
     setSelectedButton(index);
   };
 
@@ -46,6 +49,7 @@ export const Sets = () => {
             </button>
           ))}
         </div>
+        {/* REDUX */}
         <div className="ml-8 my-4 ">
           {selectedCategory === "Sets" && formData && (
             <div className="flex flex-col gap-4">
@@ -61,6 +65,8 @@ export const Sets = () => {
             </div>
           )}
         </div>
+      
+
       </div>
     </Dashboard>
   );
