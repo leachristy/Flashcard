@@ -74,9 +74,7 @@ export const New = () =>
     // setFormData([...formData, newData]);
     dispatch(addData(newData));     //I HAVE NO IDEAD WHAT THIS DOES from: @LEOTHECRZ
     // Clear form fields after adding to the array
-    setTitle("");
-    setDescription("");
-    setFields([]);
+    
 
     //Get ref to sets collection of active user
     const setsCollection = collection(database, `/UserData/${userID}/Sets`); //Get Sets Collection
@@ -88,6 +86,10 @@ export const New = () =>
       alert("Set Tittle Already Taken In Your Sets.")
       return;
     }
+
+    setTitle("");
+    setDescription("");
+    setFields([]);
 
     //Create a new doc with that stores name of set
     await setDoc(newSetDoc, {
