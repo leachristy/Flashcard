@@ -10,7 +10,6 @@ import './catdropdown.css';
 import {
     doc,
     collection,
-    addDoc,
     getDoc,
     getDocs,
     setDoc
