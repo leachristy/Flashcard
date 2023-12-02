@@ -16,9 +16,6 @@ const FireAuthProvider = (children) =>
                   (_error) => console.log(console.error())
             );
                   
-            console.log("USE-EFFECT:");
-            console.log(user);
-
             return () =>
             {
                   unsubscribe();

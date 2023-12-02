@@ -7,10 +7,6 @@ const AuthWrap = ({ element }) => {
 
   const userContext = useContext(FireAuthContext);
 
-  console.log("AuthWrap");
-  console.log(userContext);
-
-
   return userContext.user ? (
     element
   ) : (

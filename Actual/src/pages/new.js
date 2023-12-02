@@ -1,8 +1,12 @@
 //REACT
 import React, { useContext, useState } from "react";
+import { Link } from "react-router-dom";
 
 //USER CREATED @Hydro
 import { Dashboard } from "./dashboard";
+
+//USER CREATED @LeothEcRz
+import CatDropdown from '../components/catdropdown'
 
 //REDUX
 import { useSelector, useDispatch } from "react-redux";
@@ -20,7 +24,6 @@ import {
     getDoc,
     setDoc
 } from 'firebase/firestore'
-import { Link, redirect, useNavigate } from "react-router-dom";
 
 export const New = () => 
 {
@@ -30,6 +33,7 @@ export const New = () =>
   const [successfullSubmitted, setSuccessfullSubmission] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [category, setCategory] = useState(null);
   const [termField, setTermField] = useState("");
   const [defField, setDefField] = useState("");
   const [fields, setFields] = useState([]);
@@ -86,10 +90,9 @@ export const New = () =>
     }
 
     //Create a new doc with that stores name of set
-    await setDoc(newSetDoc, 
-      {
+    await setDoc(newSetDoc, {
       name: `"${title}"`,
-      });
+    });
 
     const cardsCollection = collection(database, `/UserData/${userID}/Sets`, title, "Cards");
     for(const obj of newData.fields) // Add a card document with the fields Term and Definition to the Collection Cards within the new Set Document.
@@ -137,6 +140,11 @@ export const New = () =>
       setFields(nextFields);
   };
 
+  const handleSelectValue = (value) => 
+  {
+    setCategory(value);
+  };
+
   return (
     <>
       {/* NAV */}
@@ -163,11 +171,11 @@ export const New = () =>
         <>
      
       <div className="flex justify-between w-[80%] m-auto">
-        <h1 className="uppercase inline-block  px-14 p-2 shadow-xl font-bold text-xl">
+        <h1 className="uppercase inline-block  px-14 p-2 shadow-xl font-bold text-xl rounded-xl">
           New
         </h1>
 
-        <button className="bg-blue-400  inline-block px-14 p-2 font-bold text-xl text-white uppercase shadow-xl"
+        <button className="bg-blue-400 hover:bg-blue-500 inline-block px-14 p-2 font-bold text-xl text-white uppercase shadow-xl rounded-xl"
           onClick={handleFinish}
         >
           Finish
@@ -187,6 +195,9 @@ export const New = () =>
           value={title}
           onChange={(e) => setTitle(e.target.value)}
         />
+
+        <CatDropdown onSelectValue={handleSelectValue}/>
+
         <input
           className=" p-4 my-2 block w-full text-xl border-2 border-blue-400 rounded-xl"
           placeholder="Enter a description of the set..."
@@ -251,14 +262,14 @@ export const New = () =>
         {/* Buttons */}
         <div className="flex justify-around pt-4">
           <button
-            className="bg-blue-400  ml-5 inline-block px-14 py-4 uppercase hover:bg-blue-300 text-2xl font-bold text-white"
+            className="bg-blue-400  ml-5 inline-block px-14 py-4 uppercase hover:bg-blue-300 text-2xl font-bold text-white rounded-xl"
             onClick={addNewField}
           >
             +
           </button>
 
           <button
-            className="bg-blue-400 inline-block px-14 py-4  uppercase hover:bg-blue-300 text-2xl font-bold text-white"
+            className="bg-blue-400 inline-block px-14 py-4  uppercase hover:bg-blue-300 text-2xl font-bold text-white rounded-xl"
             onClick={handleFinish}
           >
             Finish
