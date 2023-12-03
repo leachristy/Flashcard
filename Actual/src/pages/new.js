@@ -22,7 +22,8 @@ import {
     collection,
     addDoc,
     getDoc,
-    setDoc
+    setDoc,
+    updateDoc
 } from 'firebase/firestore'
 
 export const New = () => 
@@ -75,25 +76,21 @@ export const New = () =>
     dispatch(addData(newData));     //I HAVE NO IDEAD WHAT THIS DOES from: @LEOTHECRZ
     // Clear form fields after adding to the array
     
-
     //Get ref to sets collection of active user
     const setsCollection = collection(database, `/UserData/${userID}/Sets`); //Get Sets Collection
     const newSetDoc = doc(database, setsCollection.path, title);
-    
     const docCheck = await getDoc(newSetDoc); //snapshot doc
+    
     if(docCheck.exists()) //Check if Set can be created with given tittle. Tittle is used as docID.
     {
       alert("Set Tittle Already Taken In Your Sets.")
       return;
     }
-
-    setTitle("");
-    setDescription("");
-    setFields([]);
-
+    
     //Create a new doc with that stores name of set
     await setDoc(newSetDoc, {
-      name: `"${title}"`,
+      Name: `"${title}"`,
+      Description: description,
     });
 
     const cardsCollection = collection(database, `/UserData/${userID}/Sets`, title, "Cards");
@@ -101,8 +98,8 @@ export const New = () =>
     {   
       try{
         await addDoc( cardsCollection, {
-          Term: `"${obj.termField}"`,
-          Definition: `"${obj.defField}"`
+          Term: obj.termField,
+          Definition: obj.defField
         });
       } catch (err)
       {
@@ -110,6 +107,32 @@ export const New = () =>
       }
 
     }
+
+    if(category && (category.value !== "None"))
+    {
+      const catDoc =  doc(database, `/UserData/${userID}/Categories/${category.value}`);
+     
+      try {
+        const snap = await getDoc(catDoc);
+        if(snap.exists())
+        {
+          const snapEntries = snap.data().entries || {};
+          const snapSize = Object.keys(snapEntries).length;
+          snapEntries[snapSize] = title;
+          await updateDoc( catDoc, {entries: snapEntries} )
+        }
+        else
+        {
+          console.log("Snap does not exist");
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    setTitle("");
+    setDescription("");
+    setFields([]);
     setSuccessfullSubmission(true);
   };
   
@@ -142,6 +165,7 @@ export const New = () =>
       setFields(nextFields);
   };
 
+  //calback function for drop down.
   const handleSelectValue = (value) => 
   {
     setCategory(value);
@@ -151,10 +175,13 @@ export const New = () =>
     <>
       {/* NAV */}
       <Dashboard />
+
       { successfullSubmitted ? 
-      (
+      ( 
         <>
+          {/* Submission Return Screen */}
           <div className="flex flex-col items-center justify-center ">
+            
             <h1 className="text-4xl font-bold mb-4">
               Successfull Creation.
             </h1>
@@ -171,114 +198,115 @@ export const New = () =>
       : 
       (
         <>
-     
-      <div className="flex justify-between w-[80%] m-auto">
-        <h1 className="uppercase inline-block  px-14 p-2 shadow-xl font-bold text-xl rounded-xl">
-          New
-        </h1>
+          {/* Form Screen - Header */}
+          <div className="flex justify-between w-[80%] m-auto">
+            <h1 className="uppercase inline-block  px-14 p-2 shadow-xl font-bold text-xl rounded-xl">
+              New
+            </h1>
 
-        <button className="bg-blue-400 hover:bg-blue-500 inline-block px-14 p-2 font-bold text-xl text-white uppercase shadow-xl rounded-xl"
-          onClick={handleFinish}
-        >
-          Finish
-        </button>
+            <button className="bg-blue-400 hover:bg-blue-500 inline-block px-14 p-2 font-bold text-xl text-white uppercase shadow-xl rounded-xl"
+              onClick={handleFinish}
+            >
+              Finish
+            </button>
+          </div>
+          
+          {/* Form Screen - Body */}
+          <div className="w-[80%] m-auto mt-4 p-2 shadow-2xl mb-8 py-4 px-10">
+            <h1 className="text-2xl my-1">
+              Create A New Set. 
+            </h1>
 
-      </div>
+            <input
+              className="inline-block p-4 my-2 text-xl  border-2 border-blue-400 rounded-xl"
+              placeholder="Title..."
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+            />
 
-      <div className="w-[80%] m-auto mt-4 p-2 shadow-2xl mb-8 py-4 px-10">
-        <h1 className="text-2xl my-1">
-           Create A New Set. 
-        </h1>
+            <input
+              className=" p-4 my-2 block w-full text-xl border-2 border-blue-400 rounded-xl"
+              placeholder="Enter a description of the set..."
+              type="text"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+            />
 
-        <input
-          className="inline-block p-4 my-2 text-xl  border-2 border-blue-400 rounded-xl"
-          placeholder="Title..."
-          type="text"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-        />
+            <CatDropdown onSelectValue={handleSelectValue}/>
 
-        <CatDropdown onSelectValue={handleSelectValue}/>
+            {/* Terms / Defs */}
+            {fields.map( (field, i) => (
+                <div key={i}>
+                  <div className="py-2 w-full m-auto flex justify-between gap-2 my-2">
+                    
+                    <input
+                      type="text"
+                      placeholder="Term Text Field"
+                      className=" w-[25%] uppercase text-s p-4 border-2 border-blue-400 rounded-xl"
 
-        <input
-          className=" p-4 my-2 block w-full text-xl border-2 border-blue-400 rounded-xl"
-          placeholder="Enter a description of the set..."
-          type="text"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-        />
+                      value={field.termField}
+                      readOnly
+                    />
 
-        {/* Terms / Defs */}
-        {fields.map( (field, i) => (
-            <div key={i}>
-              <div className="py-2 w-full m-auto flex justify-between gap-2 my-2">
-                
-                <input
-                  type="text"
-                  placeholder="Term Text Field"
-                  className=" w-[25%] uppercase text-s p-4 border-2 border-blue-400 rounded-xl"
+                    <input
+                      type="text"
+                      placeholder="Def Text Field"
+                      className=" w-[75%] text-s p-4 border-2 border-blue-400 rounded-xl"
 
-                  value={field.termField}
-                  readOnly
-                />
-
-                <input
-                  type="text"
-                  placeholder="Def Text Field"
-                  className=" w-[75%] text-s p-4 border-2 border-blue-400 rounded-xl"
-
-                  value={field.defField}
-                  readOnly
-                />
-              
-                <button 
-                onClick={() => removeField(i)}
-                className="bg-blue-400 inline-block py-4 uppercase hover:bg-blue-500 text-xs font-bold text-white"
-                >
-                  Remove Card 
-                </button>
+                      value={field.defField}
+                      readOnly
+                    />
+                  
+                    <button 
+                    onClick={() => removeField(i)}
+                    className="bg-blue-400 inline-block py-4 uppercase hover:bg-blue-500 text-xs font-bold text-white"
+                    >
+                      Remove Card 
+                    </button>
 
 
-              </div>
+                  </div>
+                </div>
+              ))}
+
+            {/* Active Input */}
+            <div className="py-2 w-full m-auto flex justify-between gap-2 my-2">
+              <input
+                type="text"
+                placeholder="Term Text Field"
+                className=" w-[30%] text-xl p-4 border-2 border-blue-400 rounded-xl"
+                value={termField}
+                onChange={(e) => setTermField(e.target.value)}
+              />
+              <input
+                type="text"
+                placeholder="Def Text Field"
+                className="w-[70%] text-xl p-4 border-2 border-blue-400 rounded-xl"
+                value={defField}
+                onChange={(e) => setDefField(e.target.value)}
+              />
             </div>
-          ))}
+            
+            {/* Buttons */}
+            <div className="flex justify-around pt-4">
+              <button
+                className="bg-blue-400  ml-5 inline-block px-14 py-4 uppercase hover:bg-blue-300 text-2xl font-bold text-white rounded-xl"
+                onClick={addNewField}
+              >
+                +
+              </button>
 
-        {/* Active Input */}
-        <div className="py-2 w-full m-auto flex justify-between gap-2 my-2">
-          <input
-            type="text"
-            placeholder="Term Text Field"
-            className=" w-[30%] text-xl p-4 border-2 border-blue-400 rounded-xl"
-            value={termField}
-            onChange={(e) => setTermField(e.target.value)}
-          />
-          <input
-            type="text"
-            placeholder="Def Text Field"
-            className="w-[70%] text-xl p-4 border-2 border-blue-400 rounded-xl"
-            value={defField}
-            onChange={(e) => setDefField(e.target.value)}
-          />
-        </div>
-        
-        {/* Buttons */}
-        <div className="flex justify-around pt-4">
-          <button
-            className="bg-blue-400  ml-5 inline-block px-14 py-4 uppercase hover:bg-blue-300 text-2xl font-bold text-white rounded-xl"
-            onClick={addNewField}
-          >
-            +
-          </button>
+              <button
+                className="bg-blue-400 inline-block px-14 py-4  uppercase hover:bg-blue-300 text-2xl font-bold text-white rounded-xl"
+                onClick={handleFinish}
+              >
+                Finish
+              </button>
+            </div>
 
-          <button
-            className="bg-blue-400 inline-block px-14 py-4  uppercase hover:bg-blue-300 text-2xl font-bold text-white rounded-xl"
-            onClick={handleFinish}
-          >
-            Finish
-          </button>
-        </div>
+          </div>
 
-      </div>
       </>)}
     </>);
 };

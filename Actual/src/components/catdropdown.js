@@ -21,12 +21,10 @@ const SelectAndModal = ({ onSelectValue }) => {
 
     const userContext = useContext(FireAuthContext);
     const userID = userContext.user.uid;
-
     const [options, setOptions] = useState([]);
     const [selectedOption, setSelectedOption] = useState(null);
     const [showModal, setShowModal] = useState(false);
     const [modalText, setModalText] = useState('');
-
     const [fetchTrigger, setFetchTrigger] = useState(false); // New state variable
 
   const handleButtonClick = () => 
@@ -37,23 +35,26 @@ const SelectAndModal = ({ onSelectValue }) => {
   const handleModalSubmit = async () => 
   {
     console.log(`Submitted text: ${modalText}`);
-
-    const setsCollection = collection(db, `/UserData/${userID}/Categories`); //Get Sets Collection
-    const newSetDoc = doc(db, setsCollection.path, modalText);
-
-    const docCheck = await getDoc(newSetDoc); //snapshot doc
-    if(docCheck.exists()) //Check if Set can be created with given tittle. Tittle is used as docID.
+    if(modalText === "None")
     {
-      alert("Set Tittle Already Taken In Your Sets.")
+      alert("Cannot Use That Name")
       return;
     }
-
-    //Create a new doc with that stores name of set
     try
     {
-        await setDoc(newSetDoc, {
-            entries: {},
-        });
+      const setsCollection = collection(db, `/UserData/${userID}/Categories`); //Get Sets Collection
+      const newSetDoc = doc(db, setsCollection.path, modalText);
+      const docCheck = await getDoc(newSetDoc); //snapshot doc
+      if(docCheck.exists()) //Check if Set can be created with given tittle. Tittle is used as docID.
+      {
+        alert("Set Tittle Already Taken In Your Sets.")
+        return;
+      }
+    
+      //Create a new doc with that stores name of set
+      await setDoc(newSetDoc, {
+          entries: {},
+      });
 
     }catch(e)
     {
@@ -66,13 +67,12 @@ const SelectAndModal = ({ onSelectValue }) => {
 
   useEffect(() => 
   {
-
     const fetchData = async () => 
     {
         const data = await getDocs( collection(db, `/UserData/${userID}/Categories`) );
         const docNames = data.docs.map((doc) => doc.id);
-
-        setOptions(docNames);
+        const optionVals = ["None", ...docNames];
+        setOptions(optionVals);
     };
 
     fetchData();
@@ -86,8 +86,10 @@ const SelectAndModal = ({ onSelectValue }) => {
   return (
     <div>
         <div className="py-2 w-full m-auto flex justify-between gap-2 my-2">
+            
             <Select
             options={options.map((id) => ({label: id, value: id}))}
+            placeholder="Select a category(Optional)..."
             value={selectedOption}
             onChange={(value) => setSelectedOption(value)}
             className=" w-[70%] text-s p-4 border-2 border-blue-400 rounded-xl"
