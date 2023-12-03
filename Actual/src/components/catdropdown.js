@@ -14,7 +14,7 @@ import {
     getDocs,
     setDoc
 } from 'firebase/firestore'
-import { db } from '../firebase-config';
+import { db, sanitizeForFirestorePath } from '../firebase-config';
 import { FireAuthContext } from '../context/FireAuth';
 
 const SelectAndModal = ({ onSelectValue }) => {
@@ -43,7 +43,7 @@ const SelectAndModal = ({ onSelectValue }) => {
     try
     {
       const setsCollection = collection(db, `/UserData/${userID}/Categories`); //Get Sets Collection
-      const newSetDoc = doc(db, setsCollection.path, modalText);
+      const newSetDoc = doc(db, setsCollection.path, sanitizeForFirestorePath(modalText));
       const docCheck = await getDoc(newSetDoc); //snapshot doc
       if(docCheck.exists()) //Check if Set can be created with given tittle. Tittle is used as docID.
       {
@@ -53,7 +53,8 @@ const SelectAndModal = ({ onSelectValue }) => {
     
       //Create a new doc with that stores name of set
       await setDoc(newSetDoc, {
-          entries: {},
+        count: 0,
+        entries: {},
       });
 
     }catch(e)

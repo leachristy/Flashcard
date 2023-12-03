@@ -13,7 +13,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { addData } from "../redux/features/mainSlice";
 
 //User Created
-import { db as database, auth } from '../firebase-config'
+import { db as database, sanitizeForFirestorePath } from '../firebase-config'
 import { FireAuthContext } from '../context/FireAuth';
 
 //Firebase
@@ -78,7 +78,7 @@ export const New = () =>
     
     //Get ref to sets collection of active user
     const setsCollection = collection(database, `/UserData/${userID}/Sets`); //Get Sets Collection
-    const newSetDoc = doc(database, setsCollection.path, title);
+    const newSetDoc = doc(database, setsCollection.path, sanitizeForFirestorePath(title));
     const docCheck = await getDoc(newSetDoc); //snapshot doc
     
     if(docCheck.exists()) //Check if Set can be created with given tittle. Tittle is used as docID.
@@ -86,14 +86,37 @@ export const New = () =>
       alert("Set Tittle Already Taken In Your Sets.")
       return;
     }
+
+    let setCatIndex = -1;
+    if(category && (category.value !== "None")) // Check Category Dropdown
+    {
+      const catDoc =  doc(database, `/UserData/${userID}/Categories/${sanitizeForFirestorePath(category.value)}`);
+     
+      try {
+        const snap = await getDoc(catDoc);
+        if(snap.exists())
+        {
+          const snapEntries = snap.data().entries || {};
+          snapEntries[title] = title;
+          await updateDoc( catDoc, {entries: snapEntries} )
+        }
+        else
+        {
+          console.log("Snap does not exist");
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
     
     //Create a new doc with that stores name of set
     await setDoc(newSetDoc, {
       Name: `"${title}"`,
       Description: description,
+      Category: (category && (category.value !== "None")) ? category.value : null,
     });
 
-    const cardsCollection = collection(database, `/UserData/${userID}/Sets`, title, "Cards");
+    const cardsCollection = collection(database, `/UserData/${userID}/Sets`, sanitizeForFirestorePath(title), "Cards");
     for(const obj of newData.fields) // Add a card document with the fields Term and Definition to the Collection Cards within the new Set Document.
     {   
       try{
@@ -106,28 +129,6 @@ export const New = () =>
         console.error(err);
       }
 
-    }
-
-    if(category && (category.value !== "None"))
-    {
-      const catDoc =  doc(database, `/UserData/${userID}/Categories/${category.value}`);
-     
-      try {
-        const snap = await getDoc(catDoc);
-        if(snap.exists())
-        {
-          const snapEntries = snap.data().entries || {};
-          const snapSize = Object.keys(snapEntries).length;
-          snapEntries[snapSize] = title;
-          await updateDoc( catDoc, {entries: snapEntries} )
-        }
-        else
-        {
-          console.log("Snap does not exist");
-        }
-      } catch (error) {
-        console.log(error);
-      }
     }
 
     setTitle("");
@@ -183,7 +184,7 @@ export const New = () =>
           <div className="flex flex-col items-center justify-center ">
             
             <h1 className="text-4xl font-bold mb-4">
-              Successfull Creation.
+              Successfully Created.
             </h1>
             
             <Link to="/maindashboard">

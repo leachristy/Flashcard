@@ -19,3 +19,9 @@ const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app); //db can be imported into any file
 export const auth = getAuth(app); //auth can be imported into any file
 export const googleProvider = new GoogleAuthProvider(); //can be moved to login component
+
+export const sanitizeForFirestorePath = (userInput) => {
+    const sanitizedInput = userInput.replace(/[.*#\[\]\/$]/g, '_');
+    const maxLength = 50;
+    return sanitizedInput.slice(0, maxLength).trim();
+}

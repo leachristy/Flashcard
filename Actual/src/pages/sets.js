@@ -16,28 +16,46 @@ import { FireAuthContext } from '../context/FireAuth';
 
 export const Sets = () => 
 {
+
   const { formData } = useSelector((state) => state.mainSlice);
   const navigator = useNavigate();
-
   const categoryButtons = ["Sets", "Cat1", "Cat2", "Cat3"];
   const [selectedCategory, setSelectedCategory] = useState("Sets");
   const [selectedButton, setSelectedButton] = useState(null);
+  const handleClick = (category) => 
+  {
+    setSelectedCategory(category === selectedCategory ? null : category);
+  };
+  const handleButtonColor = (index) => 
+  {
+    setSelectedButton(index);
+  };
+  useEffect(() => {
+    // Set the default selected button index to the "Link" tab
+    const linkIndex = categoryButtons.indexOf("Sets");
+    setSelectedButton(linkIndex);
+    setSelecteFdButton(0);
+  }, []);
 
+  //Firebase
   const userContext = useContext(FireAuthContext);
   const userID = userContext.user.uid;
   const [firebaseCategories, setFirebaseCategories] = useState(["All"]);
   const [selectedFCategory, setSelectedFCategory] = useState("Sets");
   const [selectedFButton, setSelecteFdButton] = useState(null);
-
   const handlefClick = (category) => 
   {
     setSelectedFCategory(category === selectedFCategory ? null : category);
   };
-
   const handlefButtonColor = (index) => 
   {
     setSelecteFdButton(index);
   };
+
+  const handleCatDelete = () =>
+  {
+
+  }
 
   useEffect(() => 
   { // Fetch Firebase User Categories
@@ -52,25 +70,9 @@ export const Sets = () =>
   }, []);
   
 
-  const handleClick = (category) => 
-  {
-    setSelectedCategory(category === selectedCategory ? null : category);
-  };
-
-  const handleButtonColor = (index) => 
-  {
-    setSelectedButton(index);
-  };
-
-  useEffect(() => {
-    // Set the default selected button index to the "Link" tab
-    const linkIndex = categoryButtons.indexOf("Sets");
-    setSelectedButton(linkIndex);
-    setSelecteFdButton(0);
-  }, []);
-
   return (
     <Dashboard>
+      {/* REDUX */}
       <div className="w-[80%] m-auto mt-[50px] border-2 border-blue-400 rounded-2xl shadow-2xl p-5 pb-8">
         <div className="flex justify-evenly items-end my-6">
           {categoryButtons.map((category, index) => (
@@ -116,8 +118,8 @@ export const Sets = () =>
                 
         <div className="flex justify-evenly items-end my-6 flex-wrap space-y-4">
           {firebaseCategories.map((category, index) => (
-            <button
-              key={index}
+            <div key={index} className="flex items-center space-x-4">
+            <div
               onClick={() => {
                 handlefClick(category);
                 handlefButtonColor(index);
@@ -129,7 +131,16 @@ export const Sets = () =>
               }`}
             >
               {category}
-            </button>
+              {index !== 0 && (
+                <button
+                  onClick={() => handleCatDelete(category)}
+                  className="hover:bg-red-300 bg-red-400 px-2 py-1 ml-2 text-white font-bold rounded-md uppercase focus:outline-none transition-all duration-300 ease-in-out transform hover:scale-110"
+                >
+                  X
+                </button>
+              )}
+            </div>
+          </div>
           ))}
         </div>
 

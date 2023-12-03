@@ -8,54 +8,21 @@ import {
     collection,
     getDoc,
     getDocs,
+    setDoc,
+    deleteDoc
   } from 'firebase/firestore'
 import { FireAuthContext } from '../context/FireAuth';
-import { db } from '../firebase-config'
+import { db, sanitizeForFirestorePath } from '../firebase-config'
 
 const CategorySets = ( {CategoryID} ) =>
 {
     const navigator = useNavigate();
     const [Sets, setSets] = useState([]);
+    const [deleteState, setDeleteState] = useState(false);
     const userContext = useContext(FireAuthContext);
     const userID = userContext.user.uid;
     
-    useEffect(() => {
-
-        const getSets = async () => 
-        {
-            const data = CategoryID ? 
-            ( doc(db, `/UserData/${userID}/Categories/${CategoryID}`) ) 
-            : 
-            ( collection(db, `/UserData/${userID}/Sets`) );
-
-            try {
-                if( data.type === "collection" )
-                {
-                    const collectionDocs = await getDocs( data );
-                    const docNames = collectionDocs.docs.map((doc) => doc.id);
-                    setSets(docNames);
-                }
-                else
-                {
-                    const categoryDoc = await getDoc( data );
-                    if(categoryDoc.data() !== undefined)
-                    {
-
-                        const entries = categoryDoc.data().entries;
-                        const categoryDocs = Object.values(entries);
-                        setSets(categoryDocs);
-                    }
-                }
-            } 
-            catch (error) 
-            {
-                console.log(error);
-            }
-        }
-        getSets();
-    }, [CategoryID,userID]);
-
-    
+    //Open The Given Set with ./dictmain
     const handleRedirect = async (id) =>
     {
         console.log(id);
@@ -94,17 +61,101 @@ const CategorySets = ( {CategoryID} ) =>
         }
 
     }
+    //Remove a set
+    const handleDelete = async (event, data) => 
+    {
+        event.stopPropagation();
+        const isConfirmed = window.confirm(`Are you sure you want to delete "${data}"?`);
+
+        if (isConfirmed) 
+        {
+            const DocToDelete = doc(db, `/UserData/${userID}/Sets/${sanitizeForFirestorePath(data)}`)
+            const docSnapshot = await getDoc(DocToDelete);
+            if (docSnapshot.exists()) 
+            {
+
+                const docSnapshotData = docSnapshot.data();
+                const Cat = docSnapshotData.Category;
+                const CatDoc = doc(db, `/UserData/${userID}/Categories/${sanitizeForFirestorePath(Cat)}`)
+                const CatDocSnapshot = await getDoc(CatDoc);
+                const newCatEntries = {...CatDocSnapshot.data().entries};
+                delete newCatEntries[docSnapshotData.Name.replace(/^["']|["']$/g, '')]
+
+                await setDoc(CatDoc, { entries: newCatEntries }, { merge: true });
+                await deleteDoc(DocToDelete);
+
+                setDeleteState(!deleteState);
+            } else {
+                console.log("Document does not exist.");
+            }
+        } 
+        else 
+        {
+            console.log('Deletion canceled.');
+        }
+    }
+
+    //Gather The Sets From the given CategoryID and populate field
+    useEffect(() => {
+
+        const getSets = async () => 
+        {
+            const data = CategoryID ? 
+            ( doc(db, `/UserData/${userID}/Categories/${sanitizeForFirestorePath(CategoryID)}`) ) 
+            : 
+            ( collection(db, `/UserData/${userID}/Sets`) );
+
+            try {
+                if( data.type === "collection" )
+                {
+                    const collectionDocs = await getDocs( data );
+                    const docNames = collectionDocs.docs.map((doc) => doc.id);
+                    setSets(docNames);
+                }
+                else
+                {
+                    const categoryDoc = await getDoc( data );
+                    if(categoryDoc.data() !== undefined)
+                    {
+
+                        const entries = categoryDoc.data().entries;
+                        const categoryDocs = Object.values(entries);
+                        setSets(categoryDocs);
+                    }
+                }
+            } 
+            catch (error) 
+            {
+                console.log(error);
+            }
+        }
+
+        getSets();
+    }, [CategoryID,userID,deleteState]);
 
     return( 
     <div className="flex flex-col gap-4">
         {Sets.map((data, index) => (
-            <button
-            onClick={() => handleRedirect(data)}
-            className="hover:underline text-xl hover:bg-blue-300 bg-blue-400 px-10 py-4 text-white font-semibold inline-block p-3 uppercase "
+            
+            <div
             key={index}
+            className="flex items-center justify-between bg-white p-4 rounded shadow-md hover:cursor-pointer"
+            onClick={() => handleRedirect(data)}
             >
-            {data}
-            </button>
+                <button
+                    className="text-lg text-blue-500 font-semibold hover:underline"
+                >
+                    {data}
+                </button>
+
+                <button
+                    onClick={(event) => handleDelete(event, data)}
+                    className="bg-red-500 text-white px-4 py-2 rounded transition-all duration-300 ease-in-out hover:bg-red-600"
+                >
+                    Delete
+                </button>
+
+            </div>
         ))}
     </div>)
 
