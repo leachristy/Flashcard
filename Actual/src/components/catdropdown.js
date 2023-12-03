@@ -63,6 +63,7 @@ const SelectAndModal = ({ onSelectValue }) => {
     }
     
     setShowModal(false);
+    setModalText("");
     setFetchTrigger((prev) => !prev);
   };
 

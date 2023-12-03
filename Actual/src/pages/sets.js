@@ -8,8 +8,11 @@ import CategorySets from "../components/categorySets";
 
 //Firebase
 import {
+  doc,
   collection,
   getDocs,
+  getDoc,
+  deleteDoc,
 } from 'firebase/firestore'
 import { db } from '../firebase-config';
 import { FireAuthContext } from '../context/FireAuth';
@@ -43,6 +46,7 @@ export const Sets = () =>
   const [firebaseCategories, setFirebaseCategories] = useState(["All"]);
   const [selectedFCategory, setSelectedFCategory] = useState("Sets");
   const [selectedFButton, setSelecteFdButton] = useState(null);
+  const [deleteState, setDeleteState] = useState(false);
   const handlefClick = (category) => 
   {
     setSelectedFCategory(category === selectedFCategory ? null : category);
@@ -52,8 +56,20 @@ export const Sets = () =>
     setSelecteFdButton(index);
   };
 
-  const handleCatDelete = () =>
+  const handleCatDelete = async (evt, data) =>
   {
+    evt.stopPropagation();
+    console.log(data);
+    const categoryDocument = doc(db, `/UserData/${userID}/Categories/${data}`)
+    const CatDocSnapshot = await getDoc(categoryDocument);
+    if(CatDocSnapshot.exists())
+    {
+
+      //TODO:: On Every Entry Remove Category Marker. Not Currently Required Because Categories can only be set when created.
+
+      await deleteDoc(categoryDocument);
+      setDeleteState(!deleteState);
+    }
 
   }
 
@@ -67,7 +83,7 @@ export const Sets = () =>
         setFirebaseCategories(["All", ...docNames]);
     };
     fetchCategories();
-  }, []);
+  }, [deleteState]);
   
 
   return (
@@ -133,7 +149,7 @@ export const Sets = () =>
               {category}
               {index !== 0 && (
                 <button
-                  onClick={() => handleCatDelete(category)}
+                  onClick={(evt) => handleCatDelete(evt, category)}
                   className="hover:bg-red-300 bg-red-400 px-2 py-1 ml-2 text-white font-bold rounded-md uppercase focus:outline-none transition-all duration-300 ease-in-out transform hover:scale-110"
                 >
                   X
