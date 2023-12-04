@@ -76,14 +76,17 @@ const CategorySets = ( {CategoryID} ) =>
 
                 const docSnapshotData = docSnapshot.data();
                 const Cat = docSnapshotData.Category;
-                const CatDoc = doc(db, `/UserData/${userID}/Categories/${sanitizeForFirestorePath(Cat)}`)
-                const CatDocSnapshot = await getDoc(CatDoc);
-                const newCatEntries = {...CatDocSnapshot.data().entries};
-                delete newCatEntries[docSnapshotData.Name.replace(/^["']|["']$/g, '')]
-
-                await setDoc(CatDoc, { entries: newCatEntries }, { merge: true });
+                if(Cat)
+                {
+                    const CatDoc = doc(db, `/UserData/${userID}/Categories/${sanitizeForFirestorePath(Cat)}`)
+                    const CatDocSnapshot = await getDoc(CatDoc);
+                    
+                    const newCatEntries = {...CatDocSnapshot.data().entries};
+                    delete newCatEntries[docSnapshotData.Name.replace(/^["']|["']$/g, '')]
+                    await setDoc(CatDoc, { entries: newCatEntries }, { merge: true });
+                }
+            
                 await deleteDoc(DocToDelete);
-
                 setDeleteState(!deleteState);
             } else {
                 console.log("Document does not exist.");
