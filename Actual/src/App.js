@@ -8,6 +8,7 @@ import { Sets } from "./pages/sets";
 import { New } from "./pages/new";
 import { Dictmain } from "./pages/dictmain";
 import { Maindashboard } from "./pages/maindashboard";
+import { InputWords } from "./pages/form";
 
 //User Created @lea
 import {Flashcard} from "./pages/flashcard";
@@ -42,6 +43,11 @@ function App() {
           <Route 
             path="/new"
             element={ <AuthWrap element={<New />} /> } 
+          />
+
+          <Route 
+            path="/form"
+            element={ <AuthWrap element={<InputWords />} /> } 
           />
 
           <Route
