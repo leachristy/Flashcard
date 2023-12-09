@@ -1,4 +1,3 @@
-//REACT
 import React from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 
@@ -81,6 +80,15 @@ export const Navbar = () =>
               to=""
             >
               Account
+            </NavLink>
+          </div>
+
+          <div className="relative h-20 w-40">
+            <NavLink
+              className="text-xl hover:text-blue-300 hover:underline absolute inset-0 flex items-center justify-center transition duration-300"
+              to="/form"
+            >
+              Dictionary
             </NavLink>
           </div>
 
