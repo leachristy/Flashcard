@@ -129,6 +129,15 @@ export const Dictnavbar = () => {
             </NavLink>
           </div>
 
+          <div className="relative h-20 w-40">
+            <NavLink
+              className="text-xl hover:text-blue-300 hover:underline absolute inset-0 flex items-center justify-center  transition duration-300"
+              to="/form"
+            >
+              Dictionary
+            </NavLink>
+          </div>
+
           {/* Account */}
           <div className="text-xl relative h-20 w-40">
             <button
